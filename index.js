@@ -11,6 +11,7 @@ const client = new Client({
 
 client.once('ready', () => {
     console.log('Bot encendido 🚀');
+console.log("actualizacion");
 });
 
 const prefix = '!';
