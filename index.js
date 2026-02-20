@@ -47,6 +47,18 @@ Puedes conseguir más cosas uniéndote a nosotros.
 • Esta es una oportunidad increíble para que consigas muchas cosas.
 
 ⚠️ **El único requisito es compartir lo que consigas 50/50 o 100% dependiendo del middleman.**`);
+
+}
+
+if (command === 'mm') {
+    message.reply(`1- ¿Tienes experiencia como midddleman?
+2- ¿Tienes algun antecedente como estafador?
+3- ¿De que país eres?
+4- ¿Qué edad tienes?
+5- ¿Puedes dejar fianza?
+6- ¿Porqué desea ser middleman?
+7- ¿Que tipo de middleman desea ser, alto o bajo?`);
+
     }
 });const express = require("express");
 const app = express();
