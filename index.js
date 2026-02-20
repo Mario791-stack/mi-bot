@@ -13,16 +13,23 @@ client.once('ready', () => {
     console.log('Bot encendido 🚀');
 });
 
+const prefix = '!';
+
 client.on('messageCreate', message => {
     if (message.author.bot) return;
+    if (!message.content.startsWith(prefix)) return;
 
-    if (message.content === '!preguntas') {
-    message.reply(`1- ¿Qué dará cada uno?
+    const args = message.content.slice(prefix.length).trim().split(/ +/);
+    const command = args.shift().toLowerCase();
+
+    if (command === 'preguntas') {
+        message.reply(`1- ¿Qué dará cada uno?
 2- ¿Ambos pueden por link?
 3- Si no pueden, ¿cuáles son vuestros nombres de usuario?`);
-}
-if (message.content === '!hits') {
-    message.reply(`❗ Has sido estafado ❗
+    }
+
+    if (command === 'hits') {
+        message.reply(`❗ Has sido estafado ❗
 
 Pero no todo son malas noticias.
 
@@ -39,9 +46,8 @@ Puedes conseguir más cosas uniéndote a nosotros.
 • Esta es una oportunidad increíble para que consigas muchas cosas.
 
 ⚠️ **El único requisito es compartir lo que consigas 50/50 o 100% dependiendo del middleman.**`);
-}
-});
-const express = require("express");
+    }
+});const express = require("express");
 const app = express();
 
 app.get("/", (req, res) => {
