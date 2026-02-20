@@ -21,6 +21,9 @@ client.on('messageCreate', message => {
 2- ¿Ambos pueden por link?
 3- Si no pueden, ¿cuáles son vuestros nombres de usuario?`);
 }
+if (message.content === '!hola') {
+    message.reply('Hola 😎');
+  }
 
 });
 const express = require("express");
