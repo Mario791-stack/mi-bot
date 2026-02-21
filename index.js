@@ -25,6 +25,24 @@ console.log("actualizacion");
 });
 
 const prefix = '!';
+const STAFF_ROLES = [
+    "1470659883442634854",
+    "1471961551765508326",
+    "1471961564893679801",
+    "1471961557993918474",
+    "1471961556525776997",
+    "1471961552784457829",
+    "1471961557276692763",
+    "1471961549861031968",
+    "1471961563484258384",
+    "1471961570132361489",
+    "1471961584367833129",
+    "1471961585055699106",
+    "1471961585848287413",
+    "1473377615606710476",
+    "1471961562674888857",
+
+];
 
 client.on('messageCreate', message => {
     if (message.author.bot) return;
@@ -134,23 +152,30 @@ client.on('interactionCreate', async interaction => {
 
             const categoria = interaction.values[0];
 
-            const canal = await interaction.guild.channels.create({
-                name: `ticket-${interaction.user.username}-${categoria}`,
-                type: ChannelType.GuildText,
-                permissionOverwrites: [
-                    {
-                        id: interaction.guild.id,
-                        deny: [PermissionsBitField.Flags.ViewChannel],
-                    },
-                    {
-                        id: interaction.user.id,
-                        allow: [
-                            PermissionsBitField.Flags.ViewChannel,
-                            PermissionsBitField.Flags.SendMessages
-                        ],
-                    }
-                ]
-            });
+           const canal = await interaction.guild.channels.create({
+    name: `ticket-${interaction.user.username}-${categoria}`,
+    type: ChannelType.GuildText,
+    permissionOverwrites: [
+        {
+            id: interaction.guild.id,
+            deny: [PermissionsBitField.Flags.ViewChannel],
+        },
+        {
+            id: interaction.user.id,
+            allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages
+            ],
+        },
+        ...STAFF_ROLES.map(roleId => ({
+            id: roleId,
+            allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages
+            ],
+        }))
+    ]
+});
 
             const embedTicket = new EmbedBuilder()
                 .setTitle('🎟️ Ticket de Soporte')
