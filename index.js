@@ -117,16 +117,27 @@ Un Middleman es una persona de confianza dentro del servidor que actúa como int
         .setPlaceholder('Selecciona una categoría')
         .addOptions([
             {
-                label: 'Soporte General',
-                description: 'Ayuda del servidor',
-                value: 'soporte'
+                label: 'MM Profesional',
+                value: 'mm_profesional',
+                emoji: { id: "1474727530434134096" }
             },
             {
-                label: 'Reportes',
-                description: 'Reportar usuario',
-                value: 'reporte'
-            }
-        ]);
+                label: 'MM Experienciado',
+                value: 'mm_experienciado',
+                emoji: { id: "1474727552617812221" }
+            },
+	    {
+		label: 'MM Iniciante',
+                value: 'mm_iniciante',
+                emoji: { id: "1474727584427413547" }
+            },
+	    {
+		label: 'Auth MM',
+                value: 'mm_auth',
+                emoji: { id: "1474727567419244667" }
+	    }
+ 	]);
+
     const row = new ActionRowBuilder().addComponents(menu);
 
     message.channel.send({
