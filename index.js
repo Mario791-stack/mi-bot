@@ -1,6 +1,15 @@
 require('dotenv').config();
-const { Client, GatewayIntentBits } = require('discord.js');
-
+const { 
+    Client, 
+    GatewayIntentBits,
+    EmbedBuilder,
+    ActionRowBuilder,
+    StringSelectMenuBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    PermissionsBitField,
+    ChannelType
+} = require('discord.js');
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -10,7 +19,7 @@ const client = new Client({
     ]
 });
 
-client.once('ready', () => {
+client.once('clientReady', () => {
     console.log('Bot encendido 🚀');
 console.log("actualizacion");
 });
