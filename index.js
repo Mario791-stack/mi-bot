@@ -119,22 +119,22 @@ Un Middleman es una persona de confianza dentro del servidor que actúa como int
             {
                 label: 'MM Profesional',
                 value: 'mm_profesional',
-                emoji: { id: "1474727530434134096" }
+                emoji: { id: "1472139948147871777" }
             },
             {
                 label: 'MM Experienciado',
                 value: 'mm_experienciado',
-                emoji: { id: "1474727552617812221" }
+                emoji: { id: "1472141226898886657" }
             },
 	    {
 		label: 'MM Iniciante',
                 value: 'mm_iniciante',
-                emoji: { id: "1474727584427413547" }
+                emoji: { id: "1472138906961969247" }
             },
 	    {
 		label: 'Auth MM',
                 value: 'mm_auth',
-                emoji: { id: "1474727567419244667" }
+                emoji: { id: "1472140615847514305" }
 	    }
  	]);
 
