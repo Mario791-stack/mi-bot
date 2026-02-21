@@ -39,6 +39,11 @@ client.on('messageCreate', message => {
 3- Si no pueden, ¿cuáles son vuestros nombres de usuario?`);
     }
 
+if (command === 'fianza') {
+    message.reply(`**Fianza**
+Para ser mm se pide una fianza como medida de seguridad, ya que funciona como una garantía en caso de que el MM intente realizar una estafa, permitiendo al servidor compensar a la víctima; una vez que el MM completa su primer trade de forma correcta y sin problemas, demuestra que es confiable y la fianza se le devuelve, dejando claro que no es un pago sino una garantía temporal para proteger a los usuarios y mantener la confianza en el sistema.`);
+}
+
     if (command === 'hits') {
         message.reply(`❗ Has sido estafado ❗
 
@@ -218,11 +223,6 @@ client.on('interactionCreate', async interaction => {
 
 });
 
-if (command === 'fianza') {
-    message.reply(`**Fianza**
-Para ser mm se pide una fianza como medida de seguridad, ya que funciona como una garantía en caso de que el MM intente realizar una estafa, permitiendo al servidor compensar a la víctima; una vez que el MM completa su primer trade de forma correcta y sin problemas, demuestra que es confiable y la fianza se le devuelve, dejando claro que no es un pago sino una garantía temporal para proteger a los usuarios y mantener la confianza en el sistema.`);
-}
-}); 
 
 // =====================
 // SERVIDOR EXPRESS
