@@ -246,18 +246,48 @@ const menciones = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
             return;
         }
 
-        // =========================
-        // BOTÓN RECLAMAR
-        // =========================
-        if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
+      // =========================
+// BOTÓN RECLAMAR
+// =========================
+if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
-            await interaction.reply({
-                content: `📌 Ticket reclamado por ${interaction.user}`
-            });
+    // ❌ Si ya fue reclamado
+    if (interaction.channel.topic) {
+        return interaction.reply({
+            content: "❌ Este ticket ya fue reclamado.",
+            ephemeral: true
+        });
+    }
 
-            await interaction.channel.setName(`ticket-reclamado-${interaction.user.username}`);
-            return;
-        }
+    // ✅ Guardar quién lo reclamó
+    await interaction.channel.setTopic(interaction.user.id);
+
+    // ✅ Cambiar nombre del canal
+    await interaction.channel.setName(`ticket-reclamado-${interaction.user.username}`);
+
+    // ✅ Crear nuevos botones
+    const nuevosBotones = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId('reclamar_ticket')
+            .setLabel('Reclamado')
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true),
+
+        new ButtonBuilder()
+            .setCustomId('cerrar_ticket')
+            .setLabel('Cerrar')
+            .setStyle(ButtonStyle.Danger)
+            .setEmoji('🔒')
+    );
+
+    // ✅ Actualizar botones
+    await interaction.update({
+        components: [nuevosBotones]
+    });
+
+    // ✅ Avisar en el canal
+    await interaction.channel.send(`📌 Ticket reclamado por ${interaction.user}`);
+}
 
         // =========================
         // BOTÓN CERRAR
