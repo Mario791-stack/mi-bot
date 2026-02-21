@@ -107,46 +107,62 @@ Un Middleman es una persona de confianza dentro del servidor que actúa como int
 
 client.on('interactionCreate', async interaction => {
 
-    if (!interaction.isStringSelectMenu()) return;
-    if (interaction.customId !== 'seleccionar_categoria') return;
+    if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_categoria') {
 
-    await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ ephemeral: true });
 
-    const categoria = interaction.values[0];
+        const categoria = interaction.values[0];
 
-    const canal = await interaction.guild.channels.create({
-        name: `ticket-${interaction.user.username}-${categoria}`,
-        type: ChannelType.GuildText,
-        permissionOverwrites: [
-            {
-                id: interaction.guild.id,
-                deny: [PermissionsBitField.Flags.ViewChannel],
-            },
-            {
-                id: interaction.user.id,
-                allow: [
-                    PermissionsBitField.Flags.ViewChannel,
-                    PermissionsBitField.Flags.SendMessages
-                ],
-            }
-        ]
-    });
+        const canal = await interaction.guild.channels.create({
+            name: `ticket-${interaction.user.username}-${categoria}`,
+            type: ChannelType.GuildText,
+            permissionOverwrites: [
+                {
+                    id: interaction.guild.id,
+                    deny: [PermissionsBitField.Flags.ViewChannel],
+                },
+                {
+                    id: interaction.user.id,
+                    allow: [
+                        PermissionsBitField.Flags.ViewChannel,
+                        PermissionsBitField.Flags.SendMessages
+                    ],
+                }
+            ]
+        });
 
-    await canal.send(`🎟️ Ticket creado por ${interaction.user}`);
+        await interaction.editReply({
+            content: `✅ Ticket creado: ${canal}`
+        });
 
-    await interaction.editReply({
-        content: `✅ Tu ticket fue creado: ${canal}`
-    });
+        return;
+    }
 
-});
+    if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
-    const fila = new ActionRowBuilder().addComponents(menu);
+        await interaction.reply({
+            content: `📌 Ticket reclamado por ${interaction.user}`,
+        });
 
-    message.channel.send({
-        embeds: [embed],
-        components: [fila]
-    });
-}
+        await interaction.channel.setName(`ticket-reclamado-${interaction.user.username}`);
+        return;
+    }
+
+    if (interaction.isButton() && interaction.customId === 'cerrar_ticket') {
+
+        await interaction.reply({
+            content: '🔒 Cerrando ticket en 5 segundos...',
+            ephemeral: true
+        });
+
+        setTimeout(() => {
+            interaction.channel.delete();
+        }, 5000);
+
+        return;
+    }
+
+});}
 
 if (command === 'tercero') {
     message.reply(`**Fianza**
