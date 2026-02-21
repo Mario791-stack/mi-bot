@@ -62,6 +62,48 @@ if (command === 'mm') {
 
     }
 
+if (command === 'ticketpanel') {
+
+    const embed = new EmbedBuilder()
+        .setTitle('💼 Pedir Middleman 🤝')
+        .setDescription(`🧑‍💼 ¿Qué es un Middleman?
+
+Un Middleman es una persona de confianza dentro del servidor que actúa como intermediario en un intercambio entre dos usuarios, con el objetivo de evitar estafas y asegurar que ambas partes cumplan con lo acordado 🔒✨.
+
+⚙️ ¿Cómo funciona el proceso?
+
+1️⃣ El primer usuario entrega su objeto al Middleman 📦
+2️⃣ El segundo usuario realiza el pago acordado al primer usuario 💸
+3️⃣ Una vez verificado que todo está correcto ✅, el Middleman entrega el objeto al segundo usuario 🎁
+
+🔐 De esta manera, ambas partes pueden realizar el intercambio de forma segura, transparente y confiable.`)
+        .setColor(0x2b2d31)
+        .setImage('https://images-ext-1.discordapp.net/external/iDvEX-4xxVkV3Az48LWY5ArkKghZPOWTqk6mWUjwaQQ/https/tr.rbxcdn.com/180DAY-532688f9fd79d5108fe24db2c17725cf/500/280/Image/Jpeg/noFilter?format=webp&width=623&height=350');
+
+    const menu = new StringSelectMenuBuilder()
+        .setCustomId('seleccionar_categoria')
+        .setPlaceholder('Selecciona una categoría')
+        .addOptions([
+            {
+                label: 'Soporte General',
+                description: 'Ayuda del servidor',
+                value: 'soporte'
+            },
+            {
+                label: 'Reportes',
+                description: 'Reportar usuario',
+                value: 'reporte'
+            }
+        ]);
+
+    const fila = new ActionRowBuilder().addComponents(menu);
+
+    message.channel.send({
+        embeds: [embed],
+        components: [fila]
+    });
+}
+
 if (command === 'tercero') {
     message.reply(`**Fianza**
 Para ser mm se pide una fianza como medida de seguridad, ya que funciona como una garantía en caso de que el MM intente realizar una estafa, permitiendo al servidor compensar a la víctima; una vez que el MM completa su primer trade de forma correcta y sin problemas, demuestra que es confiable y la fianza se le devuelve, dejando claro que no es un pago sino una garantía temporal para proteger a los usuarios y mantener la confianza en el sistema.`);
