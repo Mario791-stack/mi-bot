@@ -44,6 +44,26 @@ const STAFF_ROLES = [
 
 ];
 
+const ROLES_A_MENCIONAR = [
+    "1470659883442634854",
+    "1471961551765508326",
+    "1471961564893679801",
+    "1471961557993918474",
+    "1471961556525776997",
+    "1471961552784457829",
+    "1471961557276692763",
+    "1471961549861031968",
+    "1471961563484258384",
+    "1471961570132361489",
+    "1471961584367833129",
+    "1471961585055699106",
+    "1471961585848287413",
+    "1473377615606710476",
+    "1471961562674888857",
+
+    
+];
+
 client.on('messageCreate', message => {
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
@@ -211,8 +231,10 @@ client.on('interactionCreate', async interaction => {
                     .setEmoji('🔒')
             );
 
+const menciones = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
+
             await canal.send({
-                content: `${interaction.user}`,
+                content: `${menciones} ${interaction.user}`,
                 embeds: [embedTicket],
                 components: [botones]
             });
