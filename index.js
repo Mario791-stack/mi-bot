@@ -109,6 +109,13 @@ Un Middleman es una persona de confianza dentro del servidor que actúa como int
                 value: 'reporte'
             }
         ]);
+    const row = new ActionRowBuilder().addComponents(menu);
+
+    message.channel.send({
+        embeds: [embed],
+        components: [row]
+    });
+}
 
 client.on('interactionCreate', async interaction => {
 
