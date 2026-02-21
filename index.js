@@ -19,7 +19,7 @@ const client = new Client({
     ]
 });
 
-client.once('clientReady', () => {
+client.once('ready', () => {
     console.log('Bot encendido 🚀');
 console.log("actualizacion");
 });
