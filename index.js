@@ -29,7 +29,7 @@ const client = new Client({
     ]
 });
 
-client.once('ready', async () => {
+client.on('ready', async () => {
     console.log('Bot encendido 🚀');
     console.log("actualizacion");
 
@@ -431,6 +431,19 @@ client.on('guildMemberAdd', async member => {
 
     } catch (err) {
         console.log("Error en sistema de invites:", err);
+    }
+});
+
+client.on('inviteCreate', invite => {
+    const guildInvites = invites.get(invite.guild.id) || new Map();
+    guildInvites.set(invite.code, invite);
+    invites.set(invite.guild.id, guildInvites);
+});
+
+client.on('inviteDelete', invite => {
+    const guildInvites = invites.get(invite.guild.id);
+    if (guildInvites) {
+        guildInvites.delete(invite.code);
     }
 });
 
