@@ -19,12 +19,22 @@ const client = new Client({
     ]
 });
 
-client.once('ready', () => {
+client.once('ready', async () => {
     console.log('Bot encendido 🚀');
-console.log("actualizacion");
-});
+    console.log("actualizacion");
 
+    // 🔥 Guardar invites iniciales
+    client.guilds.cache.forEach(async guild => {
+        const guildInvites = await guild.invites.fetch();
+        invites.set(guild.id, guildInvites);
+    });
+});
 const prefix = '!';
+
+const invites = new Map();
+const inviteCount = new Map();
+
+const LOG_INVITES_CHANNEL = "1472174667648335974"; 
 const STAFF_ROLES = [
     "1470659883442634854",
     "1471961551765508326",
@@ -361,6 +371,28 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
         }
     }
 
+});
+
+client.on('guildMemberAdd', async member => {
+
+    const newInvites = await member.guild.invites.fetch();
+    const oldInvites = invites.get(member.guild.id) || new Map();
+
+    const invite = newInvites.find(i => oldInvites.get(i.code)?.uses < i.uses);
+
+    if (invite) {
+        const inviter = invite.inviter;
+
+        inviteCount.set(inviter.id, (inviteCount.get(inviter.id) || 0) + 1);
+
+        const canal = member.guild.channels.cache.get(LOG_INVITES_CHANNEL);
+        if (canal) {
+            canal.send(`📨 ${member.user.tag} fue invitado por ${inviter.tag}
+🔢 Ahora tiene ${inviteCount.get(inviter.id)} invitaciones.`);
+        }
+    }
+
+    invites.set(member.guild.id, newInvites);
 });
 
 
