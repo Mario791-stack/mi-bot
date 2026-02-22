@@ -10,13 +10,22 @@ const {
     PermissionsBitField,
     ChannelType
 } = require('discord.js');
+
+const fs = require("fs"); // 👈 JUSTO AQUÍ
+
+let inviteCount = {};
+
+if (fs.existsSync("./invites.json")) {
+    inviteCount = JSON.parse(fs.readFileSync("./invites.json"));
+}
+
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-	GatewayIntentBits.GuildMembers,
-	GatewayIntentBits.GuildInvites
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildInvites
     ]
 });
 
@@ -33,7 +42,6 @@ client.once('ready', async () => {
 const prefix = '!';
 
 const invites = new Map();
-const inviteCount = new Map();
 
 const LOG_INVITES_CHANNEL = "1472174667648335974"; 
 const STAFF_ROLES = [
