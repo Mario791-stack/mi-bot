@@ -114,6 +114,50 @@ if (command === 'mm') {
 
     }
 
+if (command === 'kick') {
+
+    if (!message.member.permissions.has('KickMembers')) {
+        return message.reply("❌ No tienes permiso para usar este comando.");
+    }
+
+    const usuario = message.mentions.members.first();
+    if (!usuario) {
+        return message.reply("❌ Debes mencionar a un usuario.");
+    }
+
+    if (!usuario.kickable) {
+        return message.reply("❌ No puedo expulsar a este usuario.");
+    }
+
+    const razon = args.slice(1).join(" ") || "Sin razón especificada";
+
+    await usuario.kick(razon);
+
+    message.channel.send(`👢 ${usuario.user.tag} fue expulsado.\n📄 Razón: ${razon}`);
+}
+
+if (command === 'ban') {
+
+    if (!message.member.permissions.has('BanMembers')) {
+        return message.reply("❌ No tienes permiso para usar este comando.");
+    }
+
+    const usuario = message.mentions.members.first();
+    if (!usuario) {
+        return message.reply("❌ Debes mencionar a un usuario.");
+    }
+
+    if (!usuario.bannable) {
+        return message.reply("❌ No puedo banear a este usuario.");
+    }
+
+    const razon = args.slice(1).join(" ") || "Sin razón especificada";
+
+    await usuario.ban({ reason: razon });
+
+    message.channel.send(`🔨 ${usuario.user.tag} fue baneado.\n📄 Razón: ${razon}`);
+}
+
 if (command === 'ticketpanel') {
 
     const embed = new EmbedBuilder()
