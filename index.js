@@ -11,9 +11,10 @@ const {
     ChannelType
 } = require('discord.js');
 
-const fs = require("fs"); // 👈 JUSTO AQUÍ
+const fs = require("fs"); 
 
 let inviteCount = {};
+const invites = new Map();
 
 if (fs.existsSync("./invites.json")) {
     inviteCount = JSON.parse(fs.readFileSync("./invites.json"));
@@ -41,7 +42,6 @@ client.on('ready', async () => {
 });
 const prefix = '!';
 
-const invites = new Map();
 
 const LOG_INVITES_CHANNEL = "1472174667648335974"; 
 const STAFF_ROLES = [
