@@ -86,6 +86,16 @@ client.on('messageCreate', async message => {
 2- ¿Ambos pueden por link?
 3- Si no pueden, ¿cuáles son vuestros nombres de usuario?`);
     }
+if (command === 'invites') {
+
+    const usuario = message.mentions.users.first() || message.author;
+
+    const cantidad = inviteCount.get(usuario.id) || 0;
+
+    message.reply(`📨 ${usuario.tag} tiene ${cantidad} invitaciones.`);
+
+
+}
 
 if (command === 'fianza') {
     message.reply(`**Fianza**
