@@ -64,7 +64,7 @@ const ROLES_A_MENCIONAR = [
     
 ];
 
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
     if (message.author.bot) return;
     if (!message.content.startsWith(prefix)) return;
 
