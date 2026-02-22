@@ -99,12 +99,11 @@ if (command === 'invites') {
 
     const usuario = message.mentions.users.first() || message.author;
 
-    const cantidad = inviteCount.get(usuario.id) || 0;
+    const cantidad = inviteCount[usuario.id] || 0;
 
     message.reply(`📨 ${usuario.tag} tiene ${cantidad} invitaciones.`);
-
-
 }
+
 
 if (command === 'fianza') {
     message.reply(`**Fianza**
@@ -393,27 +392,47 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 });
 
 client.on('guildMemberAdd', async member => {
+    try {
+        const fetchedInvites = await member.guild.invites.fetch();
+        const previousInvites = invites.get(member.guild.id);
 
-    const newInvites = await member.guild.invites.fetch();
-    const oldInvites = invites.get(member.guild.id) || new Map();
+        let usedInvite;
 
-    const invite = newInvites.find(i => oldInvites.get(i.code)?.uses < i.uses);
+        fetchedInvites.forEach(invite => {
+            const oldInvite = previousInvites?.get(invite.code);
+            if (!oldInvite || invite.uses > oldInvite.uses) {
+                usedInvite = invite;
+            }
+        });
 
-    if (invite) {
-        const inviter = invite.inviter;
+        if (usedInvite) {
+            const inviter = usedInvite.inviter;
 
-        inviteCount.set(inviter.id, (inviteCount.get(inviter.id) || 0) + 1);
+            if (!inviteCount[inviter.id]) {
+                inviteCount[inviter.id] = 0;
+            }
 
-        const canal = member.guild.channels.cache.get(LOG_INVITES_CHANNEL);
-        if (canal) {
-            canal.send(`📨 ${member.user.tag} fue invitado por ${inviter.tag}
-🔢 Ahora tiene ${inviteCount.get(inviter.id)} invitaciones.`);
+            inviteCount[inviter.id]++;
+
+            // Guardar en JSON
+            fs.writeFileSync("./invites.json", JSON.stringify(inviteCount, null, 2));
+
+            const canal = member.guild.channels.cache.get(LOG_INVITES_CHANNEL);
+
+            if (canal) {
+                canal.send(
+                    `📨 ${member.user.tag} fue invitado por ${inviter.tag}
+🔢 Ahora tiene ${inviteCount[inviter.id]} invitaciones.`
+                );
+            }
         }
+
+        invites.set(member.guild.id, fetchedInvites);
+
+    } catch (err) {
+        console.log("Error en sistema de invites:", err);
     }
-
-    invites.set(member.guild.id, newInvites);
 });
-
 
 // =====================
 // SERVIDOR EXPRESS
