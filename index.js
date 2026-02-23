@@ -8,8 +8,8 @@ const {
     ButtonBuilder,
     ButtonStyle,
     PermissionsBitField,
-    ChannelType,
-    GatewayIntentBits.GuildInvites
+    ChannelType
+  
 
 } = require('discord.js');
 
