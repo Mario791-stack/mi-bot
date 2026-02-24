@@ -33,6 +33,10 @@ client.on('ready', async () => {
   });
 const prefix = '!';
 
+const BAN_LOG_CHANNEL_ID = "1475934904729473166";
+const UNBAN_LOG_CHANNEL_ID = "1475935581379887348";
+const WARN_LOG_CHANNEL_ID = "1475937903803895959";
+
 
 const LOG_INVITES_CHANNEL = "1472174667648335974"; 
 const STAFF_ROLES = [
@@ -158,7 +162,7 @@ if (command === 'kick') {
 if (command === 'ban') {
 
     if (!message.member.permissions.has('BanMembers')) {
-        return message.reply("❌ No tienes permiso para usar este comando.");
+        return message.reply("❌ No tienes permiso.");
     }
 
     const usuario = message.mentions.members.first();
@@ -166,15 +170,109 @@ if (command === 'ban') {
         return message.reply("❌ Debes mencionar a un usuario.");
     }
 
+    const razon = args.slice(1).join(" ");
+    if (!razon) {
+        return message.reply("❌ Debes proporcionar una razón.");
+    }
+
     if (!usuario.bannable) {
         return message.reply("❌ No puedo banear a este usuario.");
     }
 
-    const razon = args.slice(1).join(" ") || "Sin razón especificada";
-
     await usuario.ban({ reason: razon });
 
-    message.channel.send(`🔨 ${usuario.user.tag} fue baneado.\n📄 Razón: ${razon}`);
+    const embed = new EmbedBuilder()
+        .setTitle("🔨 Usuario Baneado")
+        .setColor("Red")
+        .addFields(
+            { name: "👤 Usuario", value: `${usuario.user.tag} (${usuario.id})` },
+            { name: "🛡 Moderador", value: `${message.author.tag}` },
+            { name: "📄 Razón", value: razon }
+        )
+        .setThumbnail(usuario.user.displayAvatarURL())
+        .setTimestamp();
+
+   const banLogChannel = message.guild.channels.cache.get(1475934904729473166);
+if (banLogChannel) banLogChannel.send({ embeds: [embed] });
+
+    message.channel.send(`✅ ${usuario.user.tag} fue baneado.`);
+}
+
+if (command === 'unban') {
+
+    if (!message.member.permissions.has('BanMembers')) {
+        return message.reply("❌ No tienes permiso.");
+    }
+
+    const userId = args[0];
+    if (!userId) {
+        return message.reply("❌ Debes proporcionar la ID del usuario.");
+    }
+
+    const razon = args.slice(1).join(" ");
+    if (!razon) {
+        return message.reply("❌ Debes proporcionar una razón.");
+    }
+
+    try {
+        const bannedUser = await message.guild.bans.fetch(userId);
+
+        await message.guild.members.unban(userId, razon);
+
+        const embed = new EmbedBuilder()
+            .setTitle("🔓 Usuario Desbaneado")
+            .setColor("Green")
+            .addFields(
+                { name: "👤 Usuario", value: `${bannedUser.user.tag} (${userId})` },
+                { name: "🛡 Moderador", value: `${message.author.tag}` },
+                { name: "📄 Razón", value: razon }
+            )
+            .setThumbnail(bannedUser.user.displayAvatarURL())
+            .setTimestamp();
+
+        const unbanLogChannel = message.guild.channels.cache.get(1475935581379887348);
+        if (unbanLogChannel) unbanLogChannel.send({ embeds: [embed] });
+
+        message.channel.send(`✅ ${bannedUser.user.tag} fue desbaneado.`);
+
+    } catch (error) {
+        message.reply("❌ Ese usuario no está baneado o la ID es inválida.");
+    }
+}
+
+if (command === 'warn') {
+
+    if (!message.member.permissions.has('KickMembers')) {
+        return message.reply("❌ No tienes permiso.");
+    }
+
+    const usuario = message.mentions.members.first();
+    if (!usuario) {
+        return message.reply("❌ Debes mencionar a un usuario.");
+    }
+
+    const razon = args.slice(1).join(" ");
+    if (!razon) {
+        return message.reply("❌ Debes proporcionar una razón.");
+    }
+
+    const embed = new EmbedBuilder()
+        .setTitle("⚠ Usuario Advertido")
+        .setColor("Yellow")
+        .addFields(
+            { name: "👤 Usuario", value: `${usuario.user.tag} (${usuario.id})` },
+            { name: "🛡 Moderador", value: `${message.author.tag}` },
+            { name: "📄 Razón", value: razon }
+        )
+        .setThumbnail(usuario.user.displayAvatarURL())
+        .setTimestamp();
+
+    const warnLogChannel = message.guild.channels.cache.get(WARN_LOG_CHANNEL_ID);
+    if (warnLogChannel) {
+        warnLogChannel.send({ embeds: [embed] });
+    }
+
+    message.channel.send(`⚠ ${usuario.user.tag} fue advertido.\n📄 Razón: ${razon}`);
 }
 
 if (command === 'ticketpanel') {
