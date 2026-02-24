@@ -90,7 +90,7 @@ client.on('messageCreate', async message => {
 2- ¿Ambos pueden por link?
 3- Si no pueden, ¿cuáles son vuestros nombres de usuario?`);
     }
-}
+});
 
 
 if (command === 'fianza') {
