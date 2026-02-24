@@ -128,7 +128,7 @@ if (command === 'mm') {
 3- ¿De que país eres?
 4- ¿Qué edad tienes?
 5- ¿Puedes dejar fianza?
-6- ¿Porqué desea ser middleman?
+6- ¿Porqué desea ser middleman en este servidor?
 7- ¿Que tipo de middleman desea ser, alto o bajo?`);
 
     }
