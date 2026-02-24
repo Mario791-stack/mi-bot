@@ -14,12 +14,6 @@ const {
 } = require('discord.js');
 
 const fs = require("fs"); 
-
-let inviteCount = {};
-const invites = new Map();
-
-if (fs.existsSync("./invites.json")) {
-    inviteCount = JSON.parse(fs.readFileSync("./invites.json"));
 }
 
 const client = new Client({
@@ -36,12 +30,7 @@ client.on('ready', async () => {
     console.log('Bot encendido 🚀');
     console.log("actualizacion");
 
-    // 🔥 Guardar invites iniciales
-    client.guilds.cache.forEach(async guild => {
-        const guildInvites = await guild.invites.fetch();
-        invites.set(guild.id, guildInvites);
-    });
-});
+  });
 const prefix = '!';
 
 
@@ -393,61 +382,6 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
 });
 
-client.on('guildMemberAdd', async member => {
-    try {
-        const fetchedInvites = await member.guild.invites.fetch();
-        const previousInvites = invites.get(member.guild.id);
-
-        let usedInvite;
-
-        fetchedInvites.forEach(invite => {
-            const oldInvite = previousInvites?.get(invite.code);
-            if (!oldInvite || invite.uses > oldInvite.uses) {
-                usedInvite = invite;
-            }
-        });
-
-        if (usedInvite) {
-            const inviter = usedInvite.inviter;
-
-            if (!inviteCount[inviter.id]) {
-                inviteCount[inviter.id] = 0;
-            }
-
-            inviteCount[inviter.id]++;
-
-            // Guardar en JSON
-            fs.writeFileSync("./invites.json", JSON.stringify(inviteCount, null, 2));
-
-            const canal = member.guild.channels.cache.get(LOG_INVITES_CHANNEL);
-
-            if (canal) {
-                canal.send(
-                    `📨 ${member.user.tag} fue invitado por ${inviter.tag}
-🔢 Ahora tiene ${inviteCount[inviter.id]} invitaciones.`
-                );
-            }
-        }
-
-        invites.set(member.guild.id, fetchedInvites);
-
-    } catch (err) {
-        console.log("Error en sistema de invites:", err);
-    }
-});
-
-client.on('inviteCreate', invite => {
-    const guildInvites = invites.get(invite.guild.id) || new Map();
-    guildInvites.set(invite.code, invite);
-    invites.set(invite.guild.id, guildInvites);
-});
-
-client.on('inviteDelete', invite => {
-    const guildInvites = invites.get(invite.guild.id);
-    if (guildInvites) {
-        guildInvites.delete(invite.code);
-    }
-});
 
 // =====================
 // SERVIDOR EXPRESS
