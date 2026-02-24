@@ -101,7 +101,7 @@ if (command === 'fianza') {
 Para ser mm se pide una fianza como medida de seguridad, ya que funciona como una garantía en caso de que el MM intente realizar una estafa, permitiendo al servidor compensar a la víctima; una vez que el MM completa su primer trade de forma correcta y sin problemas, demuestra que es confiable y la fianza se le devuelve, dejando claro que no es un pago sino una garantía temporal para proteger a los usuarios y mantener la confianza en el sistema.`);
 }
 
-    if (command === 'hits') {
+    if (command === 'stih') {
         message.reply(`❗ Has sido estafado ❗
 
 Pero no todo son malas noticias.
