@@ -31,7 +31,7 @@ client.on('ready', async () => {
     console.log("actualizacion");
 
   });
-const prefix = '!';
+const prefix = ')';
 
 const BAN_LOG_CHANNEL_ID = "1475934904729473166";
 const UNBAN_LOG_CHANNEL_ID = "1475935581379887348";
