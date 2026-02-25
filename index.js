@@ -36,9 +36,9 @@ const prefix = ')';
 const BAN_LOG_CHANNEL_ID = "1475934904729473166";
 const UNBAN_LOG_CHANNEL_ID = "1475935581379887348";
 const WARN_LOG_CHANNEL_ID = "1475937903803895959";
+const TICKET_LOG_CHANNEL_ID = "1476270126205505639";
 
 
-const LOG_INVITES_CHANNEL = "1472174667648335974"; 
 const STAFF_ROLES = [
     "1470659883442634854",
     "1471961551765508326",
@@ -96,6 +96,43 @@ client.on('messageCreate', async message => {
 if (command === 'fianza') {
     message.reply(`**Fianza**
 Para ser mm se pide una fianza como medida de seguridad, ya que funciona como una garantía en caso de que el MM intente realizar una estafa, permitiendo al servidor compensar a la víctima; una vez que el MM completa su primer trade de forma correcta y sin problemas, demuestra que es confiable y la fianza se le devuelve, dejando claro que no es un pago sino una garantía temporal para proteger a los usuarios y mantener la confianza en el sistema.`);
+}
+
+if (command === 'close') {
+
+    if (!message.channel.name.startsWith('ticket-')) {
+        return message.reply("❌ Este comando solo funciona en tickets.");
+    }
+
+    const esStaff = message.member.roles.cache.some(role => STAFF_ROLES.includes(role.id));
+    if (!esStaff) {
+        return message.reply("❌ Solo el staff puede cerrar tickets.");
+    }
+
+    await cerrarTicket(message.channel, message.author);
+}
+if (command === 'add') {
+
+    if (!message.channel.name.startsWith('ticket-')) {
+        return message.reply("❌ Este comando solo funciona dentro de tickets.");
+    }
+
+    const esStaff = message.member.roles.cache.some(role => STAFF_ROLES.includes(role.id));
+    if (!esStaff) {
+        return message.reply("❌ Solo el staff puede usar este comando.");
+    }
+
+    const usuario = message.mentions.members.first();
+    if (!usuario) {
+        return message.reply("❌ Debes mencionar a un usuario.");
+    }
+
+    await message.channel.permissionOverwrites.edit(usuario.id, {
+        ViewChannel: true,
+        SendMessages: true
+    });
+
+    message.channel.send(`✅ ${usuario} fue añadido al ticket.`);
 }
 
     if (command === 'stih') {
@@ -359,6 +396,7 @@ client.on('interactionCreate', async interaction => {
            const canal = await interaction.guild.channels.create({
     name: `ticket-${interaction.user.username}-${categoria}`,
     type: ChannelType.GuildText,
+    topic: `creador:${interaction.user.id}`,
     permissionOverwrites: [
         {
             id: interaction.guild.id,
@@ -419,26 +457,43 @@ const menciones = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
             return;
         }
 
-      // =========================
+// =========================
 // BOTÓN RECLAMAR
 // =========================
 if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
+    // 🔒 Verificar que sea staff
+    const esStaff = interaction.member.roles.cache.some(role => STAFF_ROLES.includes(role.id));
+
+    if (!esStaff) {
+        return interaction.reply({
+            content: "❌ Solo el staff puede reclamar tickets.",
+            ephemeral: true
+        });
+    }
+
+    const topic = interaction.channel.topic || "";
+
     // ❌ Si ya fue reclamado
-    if (interaction.channel.topic) {
+    if (topic.includes("reclamado:")) {
         return interaction.reply({
             content: "❌ Este ticket ya fue reclamado.",
             ephemeral: true
         });
     }
 
-    // ✅ Guardar quién lo reclamó
-    await interaction.channel.setTopic(interaction.user.id);
+    // Obtener creador
+    const creadorMatch = topic.match(/creador:(\d+)/);
+    const creadorId = creadorMatch ? creadorMatch[1] : null;
 
-    // ✅ Cambiar nombre del canal
+    // Construir nuevo topic
+    const nuevoTopic = `creador:${creadorId} | reclamado:${interaction.user.id}`;
+    await interaction.channel.setTopic(nuevoTopic);
+
+    // Cambiar nombre del canal
     await interaction.channel.setName(`ticket-reclamado-${interaction.user.username}`);
 
-    // ✅ Crear nuevos botones
+    // Actualizar botones
     const nuevosBotones = new ActionRowBuilder().addComponents(
         new ButtonBuilder()
             .setCustomId('reclamar_ticket')
@@ -453,31 +508,26 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
             .setEmoji('🔒')
     );
 
-    // ✅ Actualizar botones
     await interaction.update({
         components: [nuevosBotones]
     });
 
-    // ✅ Avisar en el canal
+    // Aviso en el canal
     await interaction.channel.send(`📌 Ticket reclamado por ${interaction.user}`);
 }
-
         // =========================
         // BOTÓN CERRAR
         // =========================
         if (interaction.isButton() && interaction.customId === 'cerrar_ticket') {
 
-            await interaction.reply({
-                content: '🔒 Cerrando ticket en 5 segundos...',
-                ephemeral: true
-            });
+    await interaction.reply({
+        content: '🔒 Cerrando ticket...',
+        ephemeral: true
+    });
 
-            setTimeout(() => {
-                interaction.channel.delete().catch(() => {});
-            }, 5000);
-
-            return;
-        }
+    await cerrarTicket(interaction.channel, interaction.user);
+    return;
+}
 
     } catch (error) {
         console.error(error);
@@ -489,8 +539,139 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
             }).catch(() => {});
         }
     }
-
 });
+
+async function cerrarTicket(canal, usuarioCierre) {
+
+    let mensajes = [];
+    let lastId;
+
+    while (true) {
+        const fetched = await canal.messages.fetch({ limit: 100, before: lastId });
+        if (fetched.size === 0) break;
+
+        mensajes.push(...fetched.values());
+        lastId = fetched.last().id;
+    }
+
+    mensajes = mensajes.reverse();
+
+    const topic = canal.topic || "";
+
+    const creadorMatch = topic.match(/creador:(\d+)/);
+    const reclamadoMatch = topic.match(/reclamado:(\d+)/);
+
+    const creadorId = creadorMatch ? creadorMatch[1] : "Desconocido";
+    const reclamadoId = reclamadoMatch ? reclamadoMatch[1] : "No reclamado";
+
+    // =========================
+    // TRANSCRIPT HTML
+    // =========================
+
+    let transcript = `
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <title>Transcript ${canal.name}</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        padding: 20px;
+    }
+    h1 {
+        color: #5865F2;
+    }
+    .info {
+        margin-bottom: 15px;
+    }
+    .message {
+        background-color: #2b2d31;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+    }
+    .author {
+        font-weight: bold;
+        color: #57F287;
+    }
+    .time {
+        font-size: 12px;
+        color: #aaaaaa;
+    }
+    .content {
+        margin-top: 4px;
+    }
+    </style>
+    </head>
+    <body>
+
+    <h1>Transcript del Ticket</h1>
+
+    <div class="info">
+    <p><strong>Ticket:</strong> ${canal.name}</p>
+    <p><strong>Creador:</strong> ${creadorId}</p>
+    <p><strong>Reclamado por:</strong> ${reclamadoId}</p>
+    <p><strong>Cerrado por:</strong> ${usuarioCierre.tag}</p>
+    <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
+    </div>
+
+    <hr>
+    `;
+
+    mensajes.forEach(msg => {
+        transcript += `
+        <div class="message">
+            <div class="author">${msg.author.tag}</div>
+            <div class="time">${msg.createdAt.toLocaleString()}</div>
+            <div class="content">
+                ${msg.content 
+                    ? msg.content.replace(/</g, "&lt;").replace(/>/g, "&gt;") 
+                    : "[Embed / Archivo]"}
+            </div>
+        </div>
+        `;
+    });
+
+    transcript += `
+    </body>
+    </html>
+    `;
+
+    const fileName = `transcript-${canal.id}.html`;
+    fs.writeFileSync(fileName, transcript);
+
+    const logChannel = canal.guild.channels.cache.get(TICKET_LOG_CHANNEL_ID);
+
+    if (logChannel) {
+
+        const embed = new EmbedBuilder()
+            .setTitle("📁 Ticket Cerrado")
+            .setColor(0x5865F2)
+            .addFields(
+                { name: "🏷 Ticket", value: canal.name, inline: true },
+                { name: "👤 Creador", value: `<@${creadorId}>`, inline: true },
+                { name: "📌 Reclamado por", value: reclamadoId === "No reclamado" ? "No reclamado" : `<@${reclamadoId}>`, inline: true },
+                { name: "👮 Cerrado por", value: usuarioCierre.tag, inline: true },
+                { name: "📊 Mensajes", value: `${mensajes.length}`, inline: true },
+                { name: "🕒 Fecha", value: `<t:${Math.floor(Date.now() / 1000)}:F>` }
+            )
+            .setFooter({ text: "Sistema Profesional de Tickets" })
+            .setTimestamp();
+
+        await logChannel.send({
+            embeds: [embed],
+            files: [fileName]
+        });
+    }
+
+    fs.unlinkSync(fileName);
+
+    setTimeout(() => {
+        canal.delete().catch(() => {});
+    }, 5000);
+}
 
 
 // =====================
