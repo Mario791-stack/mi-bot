@@ -172,27 +172,37 @@ if (command === 'ban') {
         return message.reply("❌ No puedo banear a este usuario.");
     }
 
-    await usuario.ban({ reason: razon });
+    try {
 
-    const embed = new EmbedBuilder()
-        .setTitle("🔨 Usuario Baneado")
-        .setColor("Red")
-        .addFields(
-            { name: "👤 Usuario", value: `${usuario.user.tag} (${usuario.id})` },
-            { name: "🛡 Moderador", value: `${message.author.tag}` },
-            { name: "📄 Razón", value: razon }
-        )
-        .setThumbnail(usuario.user.displayAvatarURL())
-        .setTimestamp();
+        const userTag = usuario.user.tag;
+        const userId = usuario.id;
+        const userAvatar = usuario.user.displayAvatarURL();
 
-  const banLogChannel = message.guild.channels.cache.get(1475934904729473166);
-if (banLogChannel) {
-    banLogChannel.send({ embeds: [embed] });
+        await usuario.ban({ reason: razon });
+
+        const embed = new EmbedBuilder()
+            .setTitle("🔨 Usuario Baneado")
+            .setColor("Red")
+            .addFields(
+                { name: "👤 Usuario", value: `${userTag} (${userId})` },
+                { name: "🛡 Moderador", value: `${message.author.tag}` },
+                { name: "📄 Razón", value: razon }
+            )
+            .setThumbnail(userAvatar)
+            .setTimestamp();
+
+        const banLogChannel = message.guild.channels.cache.get(BAN_LOG_CHANNEL_ID);
+        if (banLogChannel) {
+            banLogChannel.send({ embeds: [embed] });
+        }
+
+        message.channel.send(`✅ ${userTag} fue baneado.`);
+
+    } catch (error) {
+        console.error("Error en ban:", error);
+        message.reply("❌ Ocurrió un error al banear.");
+    }
 }
-
-    message.channel.send(`✅ ${usuario.user.tag} fue baneado.`);
-}
-
 if (command === 'unban') {
 
     if (!message.member.permissions.has('BanMembers')) {
