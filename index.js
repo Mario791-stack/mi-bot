@@ -220,7 +220,11 @@ if (command === 'unban') {
     }
 
     try {
+
         const bannedUser = await message.guild.bans.fetch(userId);
+
+        const userTag = bannedUser.user.tag;
+        const userAvatar = bannedUser.user.displayAvatarURL();
 
         await message.guild.members.unban(userId, razon);
 
@@ -228,21 +232,22 @@ if (command === 'unban') {
             .setTitle("🔓 Usuario Desbaneado")
             .setColor("Green")
             .addFields(
-                { name: "👤 Usuario", value: `${bannedUser.user.tag} (${userId})` },
+                { name: "👤 Usuario", value: `${userTag} (${userId})` },
                 { name: "🛡 Moderador", value: `${message.author.tag}` },
                 { name: "📄 Razón", value: razon }
             )
-            .setThumbnail(bannedUser.user.displayAvatarURL())
+            .setThumbnail(userAvatar)
             .setTimestamp();
 
-	const unbanLogChannel = message.guild.channels.cache.get(1475935581379887348);
-if (unbanLogChannel) {
-    unbanLogChannel.send({ embeds: [embed] });
-}
+        const unbanLogChannel = message.guild.channels.cache.get(UNBAN_LOG_CHANNEL_ID);
+        if (unbanLogChannel) {
+            unbanLogChannel.send({ embeds: [embed] });
+        }
 
-        message.channel.send(`✅ ${bannedUser.user.tag} fue desbaneado.`);
+        message.channel.send(`✅ ${userTag} fue desbaneado.`);
 
     } catch (error) {
+        console.error("Error en unban:", error);
         message.reply("❌ Ese usuario no está baneado o la ID es inválida.");
     }
 }
