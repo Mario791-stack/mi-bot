@@ -185,8 +185,10 @@ if (command === 'ban') {
         .setThumbnail(usuario.user.displayAvatarURL())
         .setTimestamp();
 
-   const banLogChannel = message.guild.channels.cache.get(1475934904729473166);
-if (banLogChannel) banLogChannel.send({ embeds: [embed] });
+  const banLogChannel = message.guild.channels.cache.get(1475934904729473166);
+if (banLogChannel) {
+    await banLogChannel.send({ embeds: [embed] });
+}
 
     message.channel.send(`✅ ${usuario.user.tag} fue baneado.`);
 }
@@ -223,7 +225,7 @@ if (command === 'unban') {
             .setThumbnail(bannedUser.user.displayAvatarURL())
             .setTimestamp();
 
-        const unbanLogChannel = message.guild.channels.cache.get(1475935581379887348);
+	const unbanLogChannel = message.guild.channels.cache.get(1475935581379887348);
         if (unbanLogChannel) unbanLogChannel.send({ embeds: [embed] });
 
         message.channel.send(`✅ ${bannedUser.user.tag} fue desbaneado.`);
