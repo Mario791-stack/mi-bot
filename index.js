@@ -684,17 +684,28 @@ body {
             roleColor = `#${member.roles.highest.color.toString(16).padStart(6, '0')}`;
         }
 
-        let contenido = msg.content || "";
+       let contenido = msg.content || "";
 
-        contenido = contenido
-            .replace(/<@!?(\d+)>/g, (match, id) => {
-                const user = canal.guild.members.cache.get(id);
-                return user
-                    ? `<span class="mention">@${user.user.username}</span>`
-                    : "@Usuario";
-            })
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;");
+// 1️⃣ Escapar HTML primero
+contenido = contenido
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+// 2️⃣ Luego convertir menciones de usuario
+contenido = contenido.replace(/&lt;@!?(\d+)&gt;/g, (match, id) => {
+    const user = canal.guild.members.cache.get(id);
+    return user
+        ? `<span class="mention">@${user.user.username}</span>`
+        : "@Usuario";
+});
+
+// 3️⃣ Convertir menciones de rol
+contenido = contenido.replace(/&lt;@&(\d+)&gt;/g, (match, id) => {
+    const role = canal.guild.roles.cache.get(id);
+    return role
+        ? `<span class="mention">@${role.name}</span>`
+        : "@Rol";
+});
 
         transcript += `
     <div class="message">
