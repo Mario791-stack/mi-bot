@@ -565,79 +565,184 @@ async function cerrarTicket(canal, usuarioCierre) {
     const reclamadoId = reclamadoMatch ? reclamadoMatch[1] : "No reclamado";
 
     // =========================
-    // TRANSCRIPT HTML
+    // TRANSCRIPT HTML PRO
     // =========================
 
     let transcript = `
-    <html>
-    <head>
-    <meta charset="UTF-8">
-    <title>Transcript ${canal.name}</title>
-    <style>
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #1e1e1e;
-        color: #ffffff;
-        padding: 20px;
-    }
-    h1 {
-        color: #5865F2;
-    }
-    .info {
-        margin-bottom: 15px;
-    }
-    .message {
-        background-color: #2b2d31;
-        padding: 10px;
-        margin-bottom: 10px;
-        border-radius: 6px;
-    }
-    .author {
-        font-weight: bold;
-        color: #57F287;
-    }
-    .time {
-        font-size: 12px;
-        color: #aaaaaa;
-    }
-    .content {
-        margin-top: 4px;
-    }
-    </style>
-    </head>
-    <body>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Transcript ${canal.name}</title>
+<style>
+body {
+    background-color: #313338;
+    font-family: Arial, sans-serif;
+    color: #dbdee1;
+    padding: 20px;
+}
 
+.ticket-info {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #1e1f22;
+}
+
+.ticket-info h1 {
+    color: #ffffff;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 18px;
+}
+
+.avatar img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+.avatar {
+    margin-right: 12px;
+}
+
+.content-wrapper {
+    flex: 1;
+}
+
+.header {
+    font-size: 15px;
+    margin-bottom: 3px;
+}
+
+.username {
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.timestamp {
+    font-size: 12px;
+    color: #949ba4;
+}
+
+.text {
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+.mention {
+    background-color: rgba(88,101,242,0.3);
+    color: #c9cdfb;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.attachment {
+    margin-top: 6px;
+}
+
+.attachment img {
+    max-width: 400px;
+    border-radius: 8px;
+    margin-top: 4px;
+}
+
+.file {
+    margin-top: 4px;
+}
+
+.file a {
+    color: #00a8fc;
+    text-decoration: none;
+}
+</style>
+</head>
+<body>
+
+<div class="ticket-info">
     <h1>Transcript del Ticket</h1>
-
-    <div class="info">
     <p><strong>Ticket:</strong> ${canal.name}</p>
     <p><strong>Creador:</strong> ${creadorId}</p>
     <p><strong>Reclamado por:</strong> ${reclamadoId}</p>
     <p><strong>Cerrado por:</strong> ${usuarioCierre.tag}</p>
     <p><strong>Fecha:</strong> ${new Date().toLocaleString()}</p>
-    </div>
+</div>
+`;
 
-    <hr>
-    `;
+    // =========================
+    // MENSAJES
+    // =========================
 
-    mensajes.forEach(msg => {
+    for (const msg of mensajes) {
+
+        const avatarURL = msg.author.displayAvatarURL({ extension: 'png' });
+
+        const member = canal.guild.members.cache.get(msg.author.id);
+        let roleColor = "#ffffff";
+
+        if (member && member.roles.highest && member.roles.highest.color) {
+            roleColor = `#${member.roles.highest.color.toString(16).padStart(6, '0')}`;
+        }
+
+        let contenido = msg.content || "";
+
+        contenido = contenido
+            .replace(/<@!?(\d+)>/g, (match, id) => {
+                const user = canal.guild.members.cache.get(id);
+                return user
+                    ? `<span class="mention">@${user.user.username}</span>`
+                    : "@Usuario";
+            })
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;");
+
         transcript += `
-        <div class="message">
-            <div class="author">${msg.author.tag}</div>
-            <div class="time">${msg.createdAt.toLocaleString()}</div>
-            <div class="content">
-                ${msg.content 
-                    ? msg.content.replace(/</g, "&lt;").replace(/>/g, "&gt;") 
-                    : "[Embed / Archivo]"}
-            </div>
+    <div class="message">
+        <div class="avatar">
+            <img src="${avatarURL}">
         </div>
-        `;
-    });
+        <div class="content-wrapper">
+            <div class="header">
+                <span class="username" style="color:${roleColor}">
+                    ${msg.author.tag}
+                </span>
+                <span class="timestamp">
+                    ${msg.createdAt.toLocaleString()}
+                </span>
+            </div>
+            <div class="text">${contenido}</div>
+`;
+
+        if (msg.attachments.size > 0) {
+            msg.attachments.forEach(att => {
+
+                if (att.contentType && att.contentType.startsWith("image")) {
+                    transcript += `
+            <div class="attachment">
+                <img src="${att.url}">
+            </div>
+`;
+                } else {
+                    transcript += `
+            <div class="file">
+                📎 <a href="${att.url}" target="_blank">${att.name}</a>
+            </div>
+`;
+                }
+
+            });
+        }
+
+        transcript += `
+        </div>
+    </div>
+`;
+    }
 
     transcript += `
-    </body>
-    </html>
-    `;
+</body>
+</html>
+`;
 
     const fileName = `transcript-${canal.id}.html`;
     fs.writeFileSync(fileName, transcript);
@@ -672,7 +777,6 @@ async function cerrarTicket(canal, usuarioCierre) {
         canal.delete().catch(() => {});
     }, 5000);
 }
-
 
 // =====================
 // SERVIDOR EXPRESS
