@@ -686,26 +686,19 @@ body {
 
        let contenido = msg.content || "";
 
-// 1️⃣ Escapar HTML primero
+// ❌ Eliminar menciones de rol
+contenido = contenido.replace(/<@&\d+>/g, "");
+
+// ❌ Eliminar menciones de usuario
+contenido = contenido.replace(/<@!?\d+>/g, "");
+
+// Escapar HTML
 contenido = contenido
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
 
-// 2️⃣ Luego convertir menciones de usuario
-contenido = contenido.replace(/&lt;@!?(\d+)&gt;/g, (match, id) => {
-    const user = canal.guild.members.cache.get(id);
-    return user
-        ? `<span class="mention">@${user.user.username}</span>`
-        : "@Usuario";
-});
-
-// 3️⃣ Convertir menciones de rol
-contenido = contenido.replace(/&lt;@&(\d+)&gt;/g, (match, id) => {
-    const role = canal.guild.roles.cache.get(id);
-    return role
-        ? `<span class="mention">@${role.name}</span>`
-        : "@Rol";
-});
+// Limpiar espacios extra
+contenido = contenido.replace(/\s+/g, " ").trim();
 
         transcript += `
     <div class="message">
