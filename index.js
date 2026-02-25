@@ -543,6 +543,10 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
 async function cerrarTicket(canal, usuarioCierre) {
 
+// 🛑 BLOQUEO ANTI-DUPLICADO
+if (canal._cerrando) return;
+canal._cerrando = true;
+
     let mensajes = [];
     let lastId;
 
