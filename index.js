@@ -394,39 +394,56 @@ client.on('interactionCreate', async interaction => {
         // =========================
         if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_categoria') {
 
-            await interaction.reply({
-                content: "⏳ Creando ticket...",
-                ephemeral: true
-            });
+    await interaction.reply({
+        content: "⏳ Creando ticket...",
+        ephemeral: true
+    });
 
-            const categoria = interaction.values[0];
+    const categoria = interaction.values[0];
 
-           const canal = await interaction.guild.channels.create({
-    name: `ticket-${interaction.user.username}-${categoria}`,
-    type: ChannelType.GuildText,
-    topic: `creador:${interaction.user.id}`,
-    permissionOverwrites: [
-        {
-            id: interaction.guild.id,
-            deny: [PermissionsBitField.Flags.ViewChannel],
-        },
-        {
-            id: interaction.user.id,
-            allow: [
-                PermissionsBitField.Flags.ViewChannel,
-                PermissionsBitField.Flags.SendMessages
-            ],
-        },
-        ...STAFF_ROLES.map(roleId => ({
-            id: roleId,
-            allow: [
-                PermissionsBitField.Flags.ViewChannel,
-                PermissionsBitField.Flags.SendMessages
-            ],
-        }))
-    ]
-});
+    const canal = await interaction.guild.channels.create({
+        ...
+    });
+
+    // 👇 TODO ESTO VA AQUÍ
+    const embedTicket = new EmbedBuilder()
+        .setTitle('🎟️ Ticket de Soporte')
+        .setDescription(`👤 Usuario: ${interaction.user}
+
+🟢 Estado: Abierto
+📌 Esperando que el staff lo reclame.`)
+        .setColor(0x5865F2)
+        .setTimestamp();
+
+    const botones = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId('reclamar_ticket')
+            .setLabel('Reclamar')
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji('📌'),
+
+        new ButtonBuilder()
+            .setCustomId('cerrar_ticket')
+            .setLabel('Cerrar')
+            .setStyle(ButtonStyle.Danger)
+            .setEmoji('🔒')
+    );
+
+    const menciones = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
+
+    await canal.send({
+        content: `${menciones} ${interaction.user}`,
+        embeds: [embedTicket],
+        components: [botones]
+    });
+
+    await interaction.editReply({
+        content: `✅ Ticket creado: ${canal}`
+    });
+
+    return;
 }
+
 
 // =========================
 // BOTONES STIH
@@ -527,45 +544,7 @@ if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_ca
     });
 }
 
-            const embedTicket = new EmbedBuilder()
-                .setTitle('🎟️ Ticket de Soporte')
-                .setDescription(`👤 Usuario: ${interaction.user}
-
-🟢 Estado: Abierto
-📌 Esperando que el staff lo reclame.`)
-                .setColor(0x5865F2)
-                .setTimestamp();
-
-            const botones = new ActionRowBuilder().addComponents(
-                new ButtonBuilder()
-                    .setCustomId('reclamar_ticket')
-                    .setLabel('Reclamar')
-                    .setStyle(ButtonStyle.Primary)
-                    .setEmoji('📌'),
-
-                new ButtonBuilder()
-                    .setCustomId('cerrar_ticket')
-                    .setLabel('Cerrar')
-                    .setStyle(ButtonStyle.Danger)
-                    .setEmoji('🔒')
-            );
-
-const menciones = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
-
-            await canal.send({
-                content: `${menciones} ${interaction.user}`,
-                embeds: [embedTicket],
-                components: [botones]
-            });
-
-            await interaction.editReply({
-                content: `✅ Ticket creado: ${canal}`
-            });
-
-            return;
-        }
-
-// =========================
+          // =========================
 // BOTÓN RECLAMAR
 // =========================
 if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
