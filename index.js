@@ -333,10 +333,9 @@ if (command === 'warn') {
 }
 
 if (command === 'ticketpanel') {
-
-    const embed = new EmbedBuilder()
-        .setTitle('💼 Pedir Middleman 🤝')
-        .setDescription(`🧑‍💼 ¿Qué es un Middleman?
+        const embed = new EmbedBuilder()
+            .setTitle('💼 Pedir Middleman 🤝')
+            .setDescription(`🧑‍💼 ¿Qué es un Middleman?
 
 Un Middleman es una persona de confianza dentro del servidor que actúa como intermediario en un intercambio entre dos usuarios, con el objetivo de evitar estafas y asegurar que ambas partes cumplan con lo acordado 🔒✨.
 
@@ -347,43 +346,43 @@ Un Middleman es una persona de confianza dentro del servidor que actúa como int
 3️⃣ Una vez verificado que todo está correcto ✅, el Middleman entrega el objeto al segundo usuario 🎁
 
 🔐 De esta manera, ambas partes pueden realizar el intercambio de forma segura, transparente y confiable.`)
-        .setColor(0x2b2d31)
-        .setImage('https://images-ext-1.discordapp.net/external/iDvEX-4xxVkV3Az48LWY5ArkKghZPOWTqk6mWUjwaQQ/https/tr.rbxcdn.com/180DAY-532688f9fd79d5108fe24db2c17725cf/500/280/Image/Jpeg/noFilter?format=webp&width=623&height=350');
+            .setColor(0x2b2d31)
+            .setImage('https://images-ext-1.discordapp.net/external/iDvEX-4xxVkV3Az48LWY5ArkKghZPOWTqk6mWUjwaQQ/https/tr.rbxcdn.com/180DAY-532688f9fd79d5108fe24db2c17725cf/500/280/Image/Jpeg/noFilter?format=webp&width=623&height=350');
 
-    const menu = new StringSelectMenuBuilder()
-        .setCustomId('seleccionar_categoria')
-        .setPlaceholder('Selecciona una categoría')
-        .addOptions([
-            {
-                label: 'MM Profesional',
-                value: 'mm_profesional',
-                emoji: { id: "1472139948147871777" }
-            },
-            {
-                label: 'MM Experienciado',
-                value: 'mm_experienciado',
-                emoji: { id: "1472141226898886657" }
-            },
-	    {
-		label: 'MM Iniciante',
-                value: 'mm_iniciante',
-                emoji: { id: "1472138906961969247" }
-            },
-	    {
-		label: 'Auth MM',
-                value: 'mm_auth',
-                emoji: { id: "1472140615847514305" }
-	    }
- 	]);
+        const menu = new StringSelectMenuBuilder()
+            .setCustomId('seleccionar_categoria')
+            .setPlaceholder('Selecciona una categoría')
+            .addOptions([
+                {
+                    label: 'MM Profesional',
+                    value: 'mm_profesional',
+                    emoji: { id: "1472139948147871777" }
+                },
+                {
+                    label: 'MM Experienciado',
+                    value: 'mm_experienciado',
+                    emoji: { id: "1472141226898886657" }
+                },
+                {
+                    label: 'MM Iniciante',
+                    value: 'mm_iniciante',
+                    emoji: { id: "1472138906961969247" }
+                },
+                {
+                    label: 'Auth MM',
+                    value: 'mm_auth',
+                    emoji: { id: "1472140615847514305" }
+                }
+            ]);
 
-    const row = new ActionRowBuilder().addComponents(menu);
+        const row = new ActionRowBuilder().addComponents(menu);
 
-    message.channel.send({
-        embeds: [embed],
-        components: [row]
-    });
-}
-});
+        message.channel.send({
+            embeds: [embed],
+            components: [row]
+        });
+    } 
+}); 
 
 client.on('interactionCreate', async interaction => {
 
@@ -565,7 +564,7 @@ if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_ca
     });
 }
 
-          // =========================
+ // =========================
 // BOTÓN RECLAMAR
 // =========================
 if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
@@ -635,7 +634,7 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
     await cerrarTicket(interaction.channel, interaction.user);
     return;
-}
+
 
     } catch (error) {
         console.error(error);
