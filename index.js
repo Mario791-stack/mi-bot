@@ -636,16 +636,7 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
     return;
 
 
-    } catch (error) {
-        console.error(error);
 
-        if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply({
-                content: "❌ Ha ocurrido un error.",
-                ephemeral: true
-            }).catch(() => {});
-        }
-    }
 });
 
 async function cerrarTicket(canal, usuarioCierre) {
