@@ -499,70 +499,6 @@ if (interaction.isButton()) {
     }
 }
 
-// =========================
-// NUEVO PANEL SOPORTE
-// =========================
-if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_categoria_soporte') {
-
-    await interaction.reply({
-        content: "⏳ Creando ticket de soporte...",
-        ephemeral: true
-    });
-
-    const tipo = interaction.values[0];
-
-    let nombreTicket = `soporte-${interaction.user.username}`;
-    let mensajeInicial = "El staff te atenderá pronto.";
-
-    if (tipo === "reporte_usuario") {
-        nombreTicket = `reporte-${interaction.user.username}`;
-        mensajeInicial = "🚨 Explica qué usuario deseas reportar y adjunta pruebas.";
-    }
-
-    if (tipo === "reporte_bug") {
-        nombreTicket = `bug-${interaction.user.username}`;
-        mensajeInicial = "🐛 Describe el bug detalladamente.";
-    }
-
-    if (tipo === "comprar_brainrots") {
-        nombreTicket = `brainrots-${interaction.user.username}`;
-        mensajeInicial = "🧠 Indica cuántos brainrots deseas comprar.";
-    }
-
-    const staffPing = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
-
-    const canal = await interaction.guild.channels.create({
-        name: nombreTicket,
-        type: ChannelType.GuildText,
-        topic: `creador:${interaction.user.id}`,
-        parent: "1476290382462455898",
-        permissionOverwrites: [
-            {
-                id: interaction.guild.id,
-                deny: [PermissionsBitField.Flags.ViewChannel],
-            },
-            {
-                id: interaction.user.id,
-                allow: [
-                    PermissionsBitField.Flags.ViewChannel,
-                    PermissionsBitField.Flags.SendMessages
-                ],
-            },
-            ...STAFF_ROLES.map(roleId => ({
-                id: roleId,
-                allow: [
-                    PermissionsBitField.Flags.ViewChannel,
-                    PermissionsBitField.Flags.SendMessages
-                ],
-            }))
-        ]
-    });
-
-    canal.send({
-        content: `${staffPing}\n${mensajeInicial}`,
-        allowedMentions: { roles: STAFF_ROLES }
-    });
-}
 
  // =========================
 // BOTÓN RECLAMAR
@@ -622,10 +558,10 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
     // Aviso en el canal
     await interaction.channel.send(`📌 Ticket reclamado por ${interaction.user}`);
 }
-        // =========================
-        // BOTÓN CERRAR
-        // =========================
-        if (interaction.isButton() && interaction.customId === 'cerrar_ticket') {
+// =========================
+// BOTÓN CERRAR
+// =========================
+if (interaction.isButton() && interaction.customId === 'cerrar_ticket') {
 
     await interaction.reply({
         content: '🔒 Cerrando ticket...',
@@ -634,10 +570,7 @@ if (interaction.isButton() && interaction.customId === 'reclamar_ticket') {
 
     await cerrarTicket(interaction.channel, interaction.user);
     return;
-
-
-
-});
+}
 
 async function cerrarTicket(canal, usuarioCierre) {
 
@@ -883,6 +816,11 @@ contenido = contenido.replace(/\s+/g, " ").trim();
         canal.delete().catch(() => {});
     }, 5000);
 }
+
+    } catch (error) {
+        console.error(error);
+    }
+});
 
 // =====================
 // SERVIDOR EXPRESS
