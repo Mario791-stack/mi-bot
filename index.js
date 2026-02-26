@@ -135,37 +135,45 @@ if (command === 'add') {
     message.channel.send(`✅ ${usuario} fue añadido al ticket.`);
 }
 
-    if (command === 'stih') {
-        message.reply(`❗ Has sido estafado ❗
+   if (command === 'stih') {
 
+    const embed = new EmbedBuilder()
+        .setTitle("❗ Has sido estafado ❗")
+        .setDescription(`
 Pero no todo son malas noticias.
 
-Puedes conseguir más cosas uniéndote a nosotros.
+1️⃣ Encuentra a una persona (puede ser de cualquier juego).
+2️⃣ Dile que usan middleman en este server.
+3️⃣ El middleman te ayudará y repartirán mitad y mitad contigo.
 
-1️⃣ **Encuentra a una persona (puede ser de cualquier juego).**
-2️⃣ **Dile que usan middleman en este server.**
-3️⃣ **El middleman te ayudará y repartirán mitad y mitad contigo.**
-
-(Algunos middlemans te pueden dar el 100% si así lo gustan)
+(Algunos middlemans pueden dar el 100%)
 
 📢 **Únete a nosotros**
-• Si te unes fácilmente recuperarás tus cosas y conseguirás mejores.
-• Esta es una oportunidad increíble para que consigas muchas cosas.
+• Recupera tus cosas fácilmente.
+• Consigue mejores oportunidades.
 
-⚠️ **El único requisito es compartir lo que consigas 50/50 o 100% dependiendo del middleman.**`);
+⚠️ El único requisito es compartir lo conseguido 50/50 o 100%.
+        `)
+        .setColor(0xFF0000)
+        .setTimestamp();
 
+    const botones = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+            .setCustomId("unirse_trabajo")
+            .setLabel("Unirse")
+            .setStyle(ButtonStyle.Success),
+
+        new ButtonBuilder()
+            .setCustomId("rechazar_trabajo")
+            .setLabel("No unirse")
+            .setStyle(ButtonStyle.Danger)
+    );
+
+    message.reply({
+        embeds: [embed],
+        components: [botones]
+    });
 }
-
-if (command === 'mm') {
-    message.reply(`1- ¿Tienes experiencia como midddleman?
-2- ¿Tienes algun antecedente como estafador?
-3- ¿De que país eres?
-4- ¿Qué edad tienes?
-5- ¿Puedes dejar fianza?
-6- ¿Porqué desea ser middleman en este servidor?
-7- ¿Que tipo de middleman desea ser, alto o bajo?`);
-
-    }
 
 if (command === 'kick') {
 
@@ -418,6 +426,106 @@ client.on('interactionCreate', async interaction => {
         }))
     ]
 });
+}
+
+// =========================
+// BOTONES STIH
+// =========================
+if (interaction.isButton()) {
+
+    if (interaction.customId === "unirse_trabajo") {
+
+        const rol = interaction.guild.roles.cache.get("1471961588989825195");
+
+        if (!rol) {
+            return interaction.reply({ content: "❌ Rol no encontrado.", ephemeral: true });
+        }
+
+        await interaction.member.roles.add(rol);
+
+        return interaction.reply({
+            content: "✅ Ahora formas parte del equipo.",
+            ephemeral: true
+        });
+    }
+
+    if (interaction.customId === "rechazar_trabajo") {
+
+        await interaction.reply({
+            content: "❌ Has rechazado la oferta.",
+            ephemeral: true
+        });
+
+        await interaction.guild.members.ban(interaction.user.id, {
+            reason: "user rechazo oferta de trabajo"
+        });
+    }
+}
+
+// =========================
+// NUEVO PANEL SOPORTE
+// =========================
+if (interaction.isStringSelectMenu() && interaction.customId === 'seleccionar_categoria_soporte') {
+
+    await interaction.reply({
+        content: "⏳ Creando ticket de soporte...",
+        ephemeral: true
+    });
+
+    const tipo = interaction.values[0];
+
+    let nombreTicket = `soporte-${interaction.user.username}`;
+    let mensajeInicial = "El staff te atenderá pronto.";
+
+    if (tipo === "reporte_usuario") {
+        nombreTicket = `reporte-${interaction.user.username}`;
+        mensajeInicial = "🚨 Explica qué usuario deseas reportar y adjunta pruebas.";
+    }
+
+    if (tipo === "reporte_bug") {
+        nombreTicket = `bug-${interaction.user.username}`;
+        mensajeInicial = "🐛 Describe el bug detalladamente.";
+    }
+
+    if (tipo === "comprar_brainrots") {
+        nombreTicket = `brainrots-${interaction.user.username}`;
+        mensajeInicial = "🧠 Indica cuántos brainrots deseas comprar.";
+    }
+
+    const staffPing = STAFF_ROLES.map(id => `<@&${id}>`).join(" ");
+
+    const canal = await interaction.guild.channels.create({
+        name: nombreTicket,
+        type: ChannelType.GuildText,
+        topic: `creador:${interaction.user.id}`,
+        parent: "1476290382462455898",
+        permissionOverwrites: [
+            {
+                id: interaction.guild.id,
+                deny: [PermissionsBitField.Flags.ViewChannel],
+            },
+            {
+                id: interaction.user.id,
+                allow: [
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages
+                ],
+            },
+            ...STAFF_ROLES.map(roleId => ({
+                id: roleId,
+                allow: [
+                    PermissionsBitField.Flags.ViewChannel,
+                    PermissionsBitField.Flags.SendMessages
+                ],
+            }))
+        ]
+    });
+
+    canal.send({
+        content: `${staffPing}\n${mensajeInicial}`,
+        allowedMentions: { roles: STAFF_ROLES }
+    });
+}
 
             const embedTicket = new EmbedBuilder()
                 .setTitle('🎟️ Ticket de Soporte')
