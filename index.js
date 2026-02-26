@@ -401,9 +401,31 @@ client.on('interactionCreate', async interaction => {
 
     const categoria = interaction.values[0];
 
-    const canal = await interaction.guild.channels.create({
-        ...
-    });
+   const canal = await interaction.guild.channels.create({
+    name: `ticket-${interaction.user.username}-${categoria}`,
+    type: ChannelType.GuildText,
+    topic: `creador:${interaction.user.id}`,
+    permissionOverwrites: [
+        {
+            id: interaction.guild.id,
+            deny: [PermissionsBitField.Flags.ViewChannel],
+        },
+        {
+            id: interaction.user.id,
+            allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages
+            ],
+        },
+        ...STAFF_ROLES.map(roleId => ({
+            id: roleId,
+            allow: [
+                PermissionsBitField.Flags.ViewChannel,
+                PermissionsBitField.Flags.SendMessages
+            ],
+        }))
+    ]
+});
 
     // 👇 TODO ESTO VA AQUÍ
     const embedTicket = new EmbedBuilder()
@@ -443,7 +465,6 @@ client.on('interactionCreate', async interaction => {
 
     return;
 }
-
 
 // =========================
 // BOTONES STIH
