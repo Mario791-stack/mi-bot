@@ -1,38 +1,40 @@
 console.log("Archivo ejecutándose");
-require('dotenv').config();
-const { 
-    Client, 
-    GatewayIntentBits,
-    EmbedBuilder,
-    ActionRowBuilder,
-    StringSelectMenuBuilder,
-    ButtonBuilder,
-    ButtonStyle,
-    PermissionsBitField,
-    ChannelType
-  
+require("dotenv").config();
 
-} = require('discord.js');
+// ======================
+// 🚀 SERVIDOR EXPRESS (Render)
+// ======================
+const express = require("express");
+const app = express();
 
-const fs = require("fs"); 
-
-
-const client = new Client({
-    intents: [
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildInvites
-    ]
+app.get("/", (req, res) => {
+  res.send("Bot activo");
 });
 
-client.on('ready', async () => {
-    console.log('Bot encendido 🚀');
-    console.log("actualizacion");
+const PORT = process.env.PORT || 3000;
 
-  });
-const prefix = ')';
+app.listen(PORT, () => {
+  console.log("Servidor web activo en puerto " + PORT);
+});
+
+// ======================
+// 🤖 DISCORD BOT
+// ======================
+const { Client, GatewayIntentBits } = require("discord.js");
+
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers
+  ],
+});
+
+client.on("ready", () => {
+  console.log("Bot encendido 🚀");
+});
+
 
 const BAN_LOG_CHANNEL_ID = "1475934904729473166";
 const UNBAN_LOG_CHANNEL_ID = "1475935581379887348";
@@ -823,15 +825,11 @@ contenido = contenido.replace(/\s+/g, " ").trim();
     }
 });
 
-// SERVIDOR EXPRESS (si lo tienes arriba)
-app.listen(PORT, () => {
-  console.log("Servidor web activo en puerto " + PORT);
-});
-
-// 👇 PONLO AQUÍ
+// ======================
+// 🔑 LOGIN (SIEMPRE AL FINAL)
+// ======================
 console.log("TOKEN:", process.env.TOKEN);
 
-// 👇 Y deja el login así
 client.login(process.env.TOKEN)
   .then(() => console.log("LOGIN OK"))
-  .catch(err => console.error("LOGIN ERROR:", err));
+  .catch((err) => console.error("LOGIN ERROR:", err));const prefix = ')';
