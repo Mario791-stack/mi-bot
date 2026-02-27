@@ -823,21 +823,15 @@ contenido = contenido.replace(/\s+/g, " ").trim();
     }
 });
 
-// =====================
-// SERVIDOR EXPRESS
-// =====================
-
-const express = require("express");
-const app = express();
-app.get("/", (req, res) => {
-  res.send("Bot activo");
-});
-
-const PORT = process.env.PORT || 3000;
+// SERVIDOR EXPRESS (si lo tienes arriba)
 app.listen(PORT, () => {
   console.log("Servidor web activo en puerto " + PORT);
 });
 
+// 👇 PONLO AQUÍ
+console.log("TOKEN:", process.env.TOKEN);
+
+// 👇 Y deja el login así
 client.login(process.env.TOKEN)
-  .then(() => console.log("Login correcto"))
-  .catch(err => console.error("Error login:", err));
+  .then(() => console.log("LOGIN OK"))
+  .catch(err => console.error("LOGIN ERROR:", err));
