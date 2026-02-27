@@ -1,3 +1,4 @@
+console.log("Archivo ejecutándose");
 require('dotenv').config();
 const { 
     Client, 
@@ -837,4 +838,6 @@ app.listen(PORT, () => {
   console.log("Servidor web activo en puerto " + PORT);
 });
 
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN)
+  .then(() => console.log("Login correcto"))
+  .catch(err => console.error("Error login:", err));
