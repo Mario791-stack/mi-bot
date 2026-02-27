@@ -831,7 +831,7 @@ contenido = contenido.replace(/\s+/g, " ").trim();
 // ======================
 // 🔑 LOGIN (SIEMPRE AL FINAL)
 // ======================
-console.log("TOKEN:", process.env.TOKEN);
+
 
 client.login(process.env.TOKEN)
   .then(() => console.log("LOGIN OK"))
