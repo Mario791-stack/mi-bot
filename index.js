@@ -43,6 +43,11 @@ const client = new Client({
   ],
 });
 
+client.login(process.env.TOKEN)
+  .then(() => console.log("LOGIN OK"))
+  .catch((err) => console.error("LOGIN ERROR:", err));
+
+
 const prefix = ')';
 
 client.on("ready", () => {
@@ -839,11 +844,4 @@ contenido = contenido.replace(/\s+/g, " ").trim();
     }
 });
 
-// ======================
-// 🔑 LOGIN (SIEMPRE AL FINAL)
-// ======================
 
-
-client.login(process.env.TOKEN)
-  .then(() => console.log("LOGIN OK"))
-  .catch((err) => console.error("LOGIN ERROR:", err));
