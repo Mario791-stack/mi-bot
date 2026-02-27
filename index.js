@@ -9,6 +9,7 @@ process.on("unhandledRejection", (err) => {
 });
 
 require("dotenv").config();
+console.log("TOKEN EXISTE:", !!process.env.TOKEN);
 const fs = require("fs");
 
 // ======================
