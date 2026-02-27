@@ -53,10 +53,9 @@ const client = new Client({
   ],
 });
 
-client.login(process.env.TOKEN)
+client.login(process.env.TOKEN.trim())
   .then(() => console.log("LOGIN OK"))
   .catch((err) => console.error("LOGIN ERROR:", err));
-
 
 const prefix = ')';
 
