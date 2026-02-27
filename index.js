@@ -21,7 +21,18 @@ app.listen(PORT, () => {
 // ======================
 // 🤖 DISCORD BOT
 // ======================
-const { Client, GatewayIntentBits } = require("discord.js");
+
+const { 
+  Client, 
+  GatewayIntentBits,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder,
+  ChannelType,
+  PermissionsBitField
+} = require("discord.js");
 
 const client = new Client({
   intents: [
