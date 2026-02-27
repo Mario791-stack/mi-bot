@@ -1,4 +1,13 @@
 console.log("Archivo ejecutándose");
+
+process.on("uncaughtException", (err) => {
+  console.error("UNCAUGHT EXCEPTION:", err);
+});
+
+process.on("unhandledRejection", (err) => {
+  console.error("UNHANDLED REJECTION:", err);
+});
+
 require("dotenv").config();
 const fs = require("fs");
 
