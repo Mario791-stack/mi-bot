@@ -339,7 +339,7 @@ if (command === 'ticketpanel') {
 
 Un Middleman es una persona de confianza dentro del servidor que actúa como intermediario en un intercambio entre dos usuarios, con el objetivo de evitar estafas y asegurar que ambas partes cumplan con lo acordado 🔒✨.
 
-⚙️ ¿Cómo funciona el proceso?
+⚙️ ¿Cómo funciona el proceso?.
 
 1️⃣ El primer usuario entrega su objeto al Middleman 📦
 2️⃣ El segundo usuario realiza el pago acordado al primer usuario 💸
