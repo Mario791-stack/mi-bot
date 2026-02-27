@@ -1,5 +1,6 @@
 console.log("Archivo ejecutándose");
 require("dotenv").config();
+const fs = require("fs");
 
 // ======================
 // 🚀 SERVIDOR EXPRESS (Render)
@@ -30,6 +31,8 @@ const client = new Client({
     GatewayIntentBits.GuildMembers
   ],
 });
+
+const prefix = ')';
 
 client.on("ready", () => {
   console.log("Bot encendido 🚀");
@@ -832,4 +835,4 @@ console.log("TOKEN:", process.env.TOKEN);
 
 client.login(process.env.TOKEN)
   .then(() => console.log("LOGIN OK"))
-  .catch((err) => console.error("LOGIN ERROR:", err));const prefix = ')';
+  .catch((err) => console.error("LOGIN ERROR:", err));
