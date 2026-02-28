@@ -53,9 +53,7 @@ const client = new Client({
   ],
 });
 
-client.login(process.env.TOKEN.trim())
-  .then(() => console.log("LOGIN OK"))
-  .catch((err) => console.error("LOGIN ERROR:", err));
+client.login("MTQ3NDA1OTYxOTYzNzc5MjkyOQ.GoSV63.GFWZP_5pL1u6T_znvFdlhmTKLP4n76TOQBT3dI");
 
 const prefix = ')';
 
